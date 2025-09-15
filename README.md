@@ -1,1 +1,367 @@
 # financetrake
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Expense Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">💰 Personal Expense Tracker</h1>
+            <p class="text-gray-600">Track your expenses and watch your savings grow</p>
+            
+            <!-- Currency Selection -->
+            <div class="mt-4 flex justify-center">
+                <div class="bg-white rounded-lg shadow-md p-3 flex items-center gap-3">
+                    <label class="text-sm font-medium text-gray-700">Currency:</label>
+                    <select id="currencySelect" onchange="changeCurrency()" class="px-3 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                        <option value="USD">🇺🇸 USD ($)</option>
+                        <option value="EUR">🇪🇺 EUR (€)</option>
+                        <option value="GBP">🇬🇧 GBP (£)</option>
+                        <option value="JPY">🇯🇵 JPY (¥)</option>
+                        <option value="CAD">🇨🇦 CAD (C$)</option>
+                        <option value="AUD">🇦🇺 AUD (A$)</option>
+                        <option value="CHF">🇨🇭 CHF (Fr)</option>
+                        <option value="CNY">🇨🇳 CNY (¥)</option>
+                        <option value="INR">🇮🇳 INR (₹)</option>
+                        <option value="NPR">🇳🇵 NPR (₨)</option>
+                        <option value="BRL">🇧🇷 BRL (R$)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Monthly Income</p>
+                        <p class="text-2xl font-bold text-green-600" id="monthlyIncome">$0</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <span class="text-2xl">💵</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Expenses</p>
+                        <p class="text-2xl font-bold text-red-600" id="totalExpenses">$0</p>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded-full">
+                        <span class="text-2xl">💸</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Savings</p>
+                        <p class="text-2xl font-bold text-blue-600" id="totalSavings">$0</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <span class="text-2xl">🏦</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Income & Expense Form -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6">Add Income & Expenses</h2>
+                
+                <!-- Income Section -->
+                <div class="mb-6 p-4 bg-green-50 rounded-lg">
+                    <h3 class="text-lg font-medium text-green-800 mb-3">Monthly Income</h3>
+                    <div class="flex gap-3">
+                        <input type="number" id="incomeAmount" placeholder="Enter monthly income" 
+                               class="flex-1 px-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <button onclick="setIncome()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                            Set Income
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Expense Form -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Expense Description</label>
+                        <input type="text" id="expenseDescription" placeholder="e.g., Grocery shopping" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                            <input type="number" id="expenseAmount" placeholder="0.00" step="0.01"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="expenseCategory" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="Food">🍔 Food</option>
+                                <option value="Transportation">🚗 Transportation</option>
+                                <option value="Entertainment">🎬 Entertainment</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="Bills">📄 Bills</option>
+                                <option value="Healthcare">🏥 Healthcare</option>
+                                <option value="Other">📦 Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button onclick="addExpense()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        Add Expense
+                    </button>
+                </div>
+            </div>
+
+            <!-- Expense List -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800">Recent Expenses</h2>
+                    <button onclick="clearAllExpenses()" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                        Clear All
+                    </button>
+                </div>
+                
+                <div id="expenseList" class="space-y-3 max-h-96 overflow-y-auto">
+                    <div class="text-center text-gray-500 py-8">
+                        <span class="text-4xl mb-2 block">📝</span>
+                        <p>No expenses added yet</p>
+                        <p class="text-sm">Add your first expense to get started!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Spending by Category</h2>
+            <div id="categoryBreakdown" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                <!-- Categories will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let monthlyIncome = 0;
+        let expenses = [];
+        let currentCurrency = 'USD';
+        
+        const currencySymbols = {
+            'USD': '$',
+            'EUR': '€',
+            'GBP': '£',
+            'JPY': '¥',
+            'CAD': 'C$',
+            'AUD': 'A$',
+            'CHF': 'Fr',
+            'CNY': '¥',
+            'INR': '₹',
+            'NPR': '₨',
+            'BRL': 'R$'
+        };
+
+        function changeCurrency() {
+            currentCurrency = document.getElementById('currencySelect').value;
+            updateSummary();
+            updateExpenseList();
+            updateCategoryBreakdown();
+        }
+
+        function formatCurrency(amount) {
+            const symbol = currencySymbols[currentCurrency];
+            if (currentCurrency === 'JPY') {
+                return `${symbol}${Math.round(amount)}`;
+            }
+            return `${symbol}${amount.toFixed(2)}`;
+        }
+
+        function setIncome() {
+            const incomeInput = document.getElementById('incomeAmount');
+            const amount = parseFloat(incomeInput.value);
+            
+            if (amount && amount > 0) {
+                monthlyIncome = amount;
+                incomeInput.value = '';
+                updateSummary();
+                
+                // Show success feedback
+                const button = incomeInput.nextElementSibling;
+                const originalText = button.textContent;
+                button.textContent = '✓ Set!';
+                button.classList.add('bg-green-700');
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('bg-green-700');
+                }, 1500);
+            }
+        }
+
+        function addExpense() {
+            const description = document.getElementById('expenseDescription').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const category = document.getElementById('expenseCategory').value;
+            
+            if (description && amount && amount > 0) {
+                const expense = {
+                    id: Date.now(),
+                    description,
+                    amount,
+                    category,
+                    date: new Date().toLocaleDateString()
+                };
+                
+                expenses.unshift(expense);
+                
+                // Clear form
+                document.getElementById('expenseDescription').value = '';
+                document.getElementById('expenseAmount').value = '';
+                
+                updateExpenseList();
+                updateSummary();
+                updateCategoryBreakdown();
+            }
+        }
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(expense => expense.id !== id);
+            updateExpenseList();
+            updateSummary();
+            updateCategoryBreakdown();
+        }
+
+        function clearAllExpenses() {
+            if (expenses.length > 0 && confirm('Are you sure you want to clear all expenses?')) {
+                expenses = [];
+                updateExpenseList();
+                updateSummary();
+                updateCategoryBreakdown();
+            }
+        }
+
+        function updateExpenseList() {
+            const expenseList = document.getElementById('expenseList');
+            
+            if (expenses.length === 0) {
+                expenseList.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <span class="text-4xl mb-2 block">📝</span>
+                        <p>No expenses added yet</p>
+                        <p class="text-sm">Add your first expense to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            expenseList.innerHTML = expenses.map(expense => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-sm font-medium text-gray-800">${expense.description}</span>
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">${expense.category}</span>
+                        </div>
+                        <p class="text-xs text-gray-500">${expense.date}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-semibold text-red-600">-${formatCurrency(expense.amount)}</span>
+                        <button onclick="deleteExpense(${expense.id})" class="text-red-500 hover:text-red-700 text-sm">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateSummary() {
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const savings = monthlyIncome - totalExpenses;
+            
+            document.getElementById('monthlyIncome').textContent = formatCurrency(monthlyIncome);
+            document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
+            document.getElementById('totalSavings').textContent = formatCurrency(savings);
+            
+            // Update savings color based on positive/negative
+            const savingsElement = document.getElementById('totalSavings');
+            if (savings >= 0) {
+                savingsElement.className = 'text-2xl font-bold text-blue-600';
+            } else {
+                savingsElement.className = 'text-2xl font-bold text-red-600';
+            }
+        }
+
+        function updateCategoryBreakdown() {
+            const categoryTotals = {};
+            const categoryEmojis = {
+                'Food': '🍔',
+                'Transportation': '🚗',
+                'Entertainment': '🎬',
+                'Shopping': '🛍️',
+                'Bills': '📄',
+                'Healthcare': '🏥',
+                'Other': '📦'
+            };
+            
+            expenses.forEach(expense => {
+                categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.amount;
+            });
+            
+            const breakdown = document.getElementById('categoryBreakdown');
+            
+            if (Object.keys(categoryTotals).length === 0) {
+                breakdown.innerHTML = '<div class="col-span-full text-center text-gray-500 py-4">No expenses to categorize yet</div>';
+                return;
+            }
+            
+            breakdown.innerHTML = Object.entries(categoryTotals)
+                .sort(([,a], [,b]) => b - a)
+                .map(([category, total]) => `
+                    <div class="bg-gray-50 rounded-lg p-4 text-center hover:bg-gray-100 transition-colors">
+                        <div class="text-2xl mb-2">${categoryEmojis[category]}</div>
+                        <div class="text-sm font-medium text-gray-700 mb-1">${category}</div>
+                        <div class="text-lg font-bold text-red-600">${formatCurrency(total)}</div>
+                    </div>
+                `).join('');
+        }
+
+        // Allow Enter key to submit forms
+        document.getElementById('incomeAmount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') setIncome();
+        });
+
+        document.getElementById('expenseAmount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addExpense();
+        });
+
+        document.getElementById('expenseDescription').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addExpense();
+        });
+
+        // Initialize
+        updateCategoryBreakdown();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f81a33c0e59e80',t:'MTc1NzkzOTA4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
